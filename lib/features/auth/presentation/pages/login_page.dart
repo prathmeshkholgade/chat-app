@@ -37,9 +37,11 @@ class Loginpage extends StatelessWidget {
               width: 70,
               height: 30,
               color: Colors.blue,
-              
+
               text: "Log In",
-              onPressed: () {},
+              onPressed: () {
+                authController.login();
+              },
             ),
             SizedBox(height: 20),
             RichText(

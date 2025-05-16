@@ -3,6 +3,8 @@ import 'package:chatapp/features/auth/presentation/getx/bindings/auth_binding.da
 import 'package:chatapp/features/auth/presentation/getx/controller/auth_controller.dart';
 import 'package:chatapp/features/auth/presentation/pages/login_page.dart';
 import 'package:chatapp/features/auth/presentation/pages/signup_page.dart';
+import 'package:chatapp/features/home/presentation/pages/home_page.dart';
+import 'package:chatapp/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,7 +13,7 @@ import 'package:get/route_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // Get.put(
   //   AuthController(loginUseCase: loginUseCase, signupUseCase: signupUseCase),
   // );

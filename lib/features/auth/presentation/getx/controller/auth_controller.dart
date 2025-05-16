@@ -2,6 +2,7 @@ import 'package:chatapp/core/error/failure.dart';
 import 'package:chatapp/features/auth/domain/entities/user.dart';
 import 'package:chatapp/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:chatapp/features/auth/domain/usecase/signup_user_usecase.dart';
+import 'package:chatapp/features/home/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -25,8 +26,14 @@ class AuthController extends GetxController {
       password: passwordController.text.trim(),
     );
     result.fold(
-      (failure) => authFailure.value = failure,
-      (userEntity) => user.value = userEntity,
+      (failure) {
+        authFailure.value = failure;
+        Get.snackbar("Login Failed", failure.message);
+      },
+      (userEntity) {
+        user.value = userEntity;
+        Get.offAll(HomePage());
+      },
     );
     isLoading.value = false;
   }
@@ -38,10 +45,16 @@ class AuthController extends GetxController {
       email: emailController.text.trim(),
       password: passwordController.text.trim(),
     );
-    result.fold((failure) {
-      authFailure.value = failure;
-      Get.snackbar("Signup Failed", failure.message);
-    }, (userEntity) => user.value = userEntity);
+    result.fold(
+      (failure) {
+        authFailure.value = failure;
+        Get.snackbar("Login Failed", failure.message);
+      },
+      (userEntity) {
+        user.value = userEntity;
+        Get.offAll(HomePage());
+      },
+    );
     isLoading.value = false;
   }
 }

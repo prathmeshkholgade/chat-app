@@ -8,7 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 class AuthBinding extends Bindings {
-  final  firebaseAuthService = FirebaseAuthService(FirebaseAuth.instance);
+  final firebaseAuthService = FirebaseAuthService(FirebaseAuth.instance);
   @override
   void dependencies() {
     final remoteDataSource = AuthRemoteDataSourceImpl(firebaseAuthService);
