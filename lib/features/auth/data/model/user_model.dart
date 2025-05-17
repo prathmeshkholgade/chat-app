@@ -5,29 +5,15 @@ class UserModel extends User {
     required String id,
     required String name,
     required String email,
-    required String password,
     required int number,
-  }) : super(
-         id: id,
-         email: email,
-         name: name,
-         number: number,
-         password: password,
-       );
+  }) : super(id: id, email: email, name: name, number: number);
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'number': number,
-      'password': password,
-    };
+    return {'id': id, 'name': name, 'email': email, 'number': number};
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       name: json["name"],
-      password: json["password"],
       number: json["number"],
       email: json["email"],
       id: json["id"],

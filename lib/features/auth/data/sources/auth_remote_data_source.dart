@@ -1,15 +1,18 @@
 import 'package:chatapp/features/auth/domain/entities/user.dart' as appUser;
 import 'package:chatapp/service/firebase_auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chatapp/service/firestore_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 abstract class AuthRemoteDataSource {
   Future<appUser.User> signUp(String email, String password);
   Future<appUser.User> login(String email, String password);
+  Future<appUser.User> getCurrentUser();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuthService _firebaseAuthService;
-  AuthRemoteDataSourceImpl(this._firebaseAuthService);
+  final FirestoreService _firebaseFirestore;
+  AuthRemoteDataSourceImpl(this._firebaseAuthService, this._firebaseFirestore);
 
   @override
   Future<appUser.User> signUp(String email, String password) async {
@@ -22,8 +25,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       id: fbUser.uid,
       email: fbUser.email ?? '',
       name: fbUser.displayName ?? '',
-      password: '', // Firebase doesn't return password
-      number: 0, // Optional: fetch from Firestore if needed
+      number: 0,
     );
   }
 
@@ -38,8 +40,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       id: fbUser.uid,
       email: fbUser.email ?? '',
       name: fbUser.displayName ?? '',
-      password: '',
+
       number: 0,
+    );
+  }
+
+  @override
+  Future<appUser.User> getCurrentUser() async {
+    final userModel = await _firebaseFirestore.getCurrentUser();
+
+    if (userModel == null) {
+      throw Exception("User not found in Firestore");
+    }
+
+    // Convert UserModel to appUser.User
+    return appUser.User(
+      id: userModel.id,
+      email: userModel.email,
+      name: userModel.name,
+      number: userModel.number,
     );
   }
 }

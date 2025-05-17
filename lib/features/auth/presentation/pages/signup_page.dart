@@ -1,3 +1,4 @@
+import 'package:chatapp/di/injection.dart';
 import 'package:chatapp/features/auth/presentation/getx/controller/auth_controller.dart';
 import 'package:chatapp/features/auth/presentation/pages/login_page.dart';
 import 'package:chatapp/core/common/widgets/app_button.dart';
@@ -9,7 +10,10 @@ import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 
 class SignupPage extends StatelessWidget {
-  final authController = Get.find<AuthController>();
+  final authController = sl<AuthController>();
+  final _formKey = GlobalKey<FormState>();
+
+  SignupPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,58 +24,89 @@ class SignupPage extends StatelessWidget {
       body: Container(
         padding: const EdgeInsets.all(10),
         margin: EdgeInsets.only(top: 50),
-        child: Column(
-          children: [
-            AppText(text: "Register"),
-            SizedBox(height: 20),
-            AuthField(hint: "Name", controller: authController.nameController),
-            SizedBox(height: 20),
-            AuthField(
-              hint: "Email",
-              controller: authController.emailController,
-            ),
-            SizedBox(height: 20),
-            AuthField(
-              hint: "Mobile Number",
-              controller: authController.numberController,
-            ),
-            SizedBox(height: 20),
-            AuthField(
-              hint: "Password",
-              isObscureText: true,
-              controller: authController.passwordController,
-            ),
-            SizedBox(height: 20),
-            AppButton(
-              width: 70,
-              height: 30,
-              color: Colors.blue,
-              text: "Sign up",
-              onPressed: () {
-                authController.signup();
-              },
-            ),
-            SizedBox(height: 20),
-            RichText(
-              text: TextSpan(
-                text: "Already have an account?",
-                style: Theme.of(context).textTheme.titleMedium,
-                children: [
-                  TextSpan(
-                    text: "Login",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.orangeAccent,
-                    ),
-                    recognizer:
-                        TapGestureRecognizer()
-                          ..onTap = () {
-                            Get.to(Loginpage());
-                          },
-                  ),
-                ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              AppText(text: "Register"),
+              SizedBox(height: 20),
+              AuthField(
+                hint: "FullName",
+                controller: authController.nameController,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? "Please enter your fullname"
+                            : null,
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+              AuthField(
+                hint: "Email",
+                controller: authController.emailController,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? "Please enter your email"
+                            : null,
+              ),
+              SizedBox(height: 20),
+              AuthField(
+                hint: "Mobile Number",
+                controller: authController.numberController,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? "Please enter your mobile number"
+                            : null,
+              ),
+              SizedBox(height: 20),
+              AuthField(
+                hint: "Password",
+                isObscureText: true,
+                controller: authController.passwordController,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? "Please enter password"
+                            : null,
+              ),
+              SizedBox(height: 20),
+              Obx(
+                () => AppButton(
+                  width: 70,
+                  height: 30,
+                  isLoading: authController.isLoading.value,
+                  color: Colors.blue,
+                  text: "Sign up",
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      authController.signup();
+                    }
+                  },
+                ),
+              ),
+              SizedBox(height: 20),
+              RichText(
+                text: TextSpan(
+                  text: "Already have an account?",
+                  style: Theme.of(context).textTheme.titleMedium,
+                  children: [
+                    TextSpan(
+                      text: "Login",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.orangeAccent,
+                      ),
+                      recognizer:
+                          TapGestureRecognizer()
+                            ..onTap = () {
+                              Get.to(Loginpage());
+                            },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

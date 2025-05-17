@@ -1,5 +1,8 @@
 import 'package:chatapp/core/common/widgets/app_text.dart';
+import 'package:chatapp/features/profile/pages/profile_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/instance_manager.dart';
 
 class ContactPage extends StatelessWidget {
   const ContactPage({super.key});
@@ -11,7 +14,14 @@ class ContactPage extends StatelessWidget {
         leading: IconButton(onPressed: () {}, icon: Icon(Icons.search)),
         title: AppText(text: "Contact", size: 18),
         centerTitle: true,
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.person))],
+        actions: [
+          IconButton(
+            onPressed: () {
+              Get.to(ProfilePage());
+            },
+            icon: Icon(Icons.person),
+          ),
+        ],
       ),
     );
   }

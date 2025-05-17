@@ -21,6 +21,17 @@ class AuthRepositoryImp implements AuthRepository {
   Future<Either<Failure, User>> signup(String email, String password) async {
     try {
       final user = await remoteDataSource.signUp(email, password);
+
+      return Right(user);
+    } catch (e) {
+      return left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> getCurrentUser() async {
+    try {
+      final user = await remoteDataSource.getCurrentUser();
       return Right(user);
     } catch (e) {
       return left(ServerFailure(e.toString()));
