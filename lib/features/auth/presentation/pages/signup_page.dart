@@ -6,6 +6,7 @@ import 'package:chatapp/core/common/widgets/app_text.dart';
 import 'package:chatapp/features/auth/presentation/widgets/auth_field.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 
@@ -53,11 +54,19 @@ class SignupPage extends StatelessWidget {
               AuthField(
                 hint: "Mobile Number",
                 controller: authController.numberController,
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty
-                            ? "Please enter your mobile number"
-                            : null,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ],
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter your mobile number";
+                  } else if (value.length != 10) {
+                    return "Mobile number must be exactly 10 digits";
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 20),
               AuthField(

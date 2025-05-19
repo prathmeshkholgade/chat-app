@@ -1,4 +1,3 @@
-import 'package:chatapp/features/addnewcontact/pages/add_new_contact_page.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {

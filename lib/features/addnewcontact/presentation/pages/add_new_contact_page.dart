@@ -1,3 +1,5 @@
+import 'package:chatapp/di/injection.dart';
+import 'package:chatapp/features/addnewcontact/presentation/getx/contact_controller.dart';
 import 'package:flutter/material.dart';
 
 void showContactsDialog(BuildContext context) {

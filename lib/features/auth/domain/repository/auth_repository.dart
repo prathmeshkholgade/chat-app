@@ -13,6 +13,7 @@ abstract interface class AuthRepository {
   Future<Either<Failure, User>> login(String email, String password);
   Future<Either<Failure, User>> signup(String email, String password);
   Future<Either<Failure, User>> getCurrentUser();
+  Future<void> logout();
   // logout
 }
 

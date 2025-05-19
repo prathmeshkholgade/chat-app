@@ -1,4 +1,6 @@
-import 'package:chatapp/features/addnewcontact/pages/add_new_contact_page.dart';
+import 'package:chatapp/di/injection.dart';
+import 'package:chatapp/features/addnewcontact/presentation/getx/contact_controller.dart';
+import 'package:chatapp/features/addnewcontact/presentation/pages/add_new_contact_page.dart';
 import 'package:chatapp/features/calls/pages/call_history_page.dart';
 import 'package:chatapp/features/contacts/pages/contact_page.dart';
 import 'package:chatapp/features/home/presentation/getx/controller/home_controller.dart';
@@ -9,6 +11,7 @@ import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
+  final contactControll = sl<ContactController>();
   HomePage({super.key});
   final List<Widget> pages = [
     MessagePage(),
@@ -28,11 +31,12 @@ class HomePage extends StatelessWidget {
           type: BottomNavigationBarType.fixed,
           onTap: (index) {
             if (index == 2) {
+              contactControll.getContacts();
               return showContactsDialog(context);
             }
             controller.onItemTapped(index);
           },
-          selectedItemColor: Colors.blueAccent,
+          selectedItemColor: const Color.fromARGB(221, 24, 179, 179),
           selectedFontSize: 0,
           unselectedFontSize: 0,
           showUnselectedLabels: false,

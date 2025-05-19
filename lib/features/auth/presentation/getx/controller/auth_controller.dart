@@ -3,6 +3,7 @@ import 'package:chatapp/features/auth/data/model/user_model.dart';
 import 'package:chatapp/features/auth/domain/entities/user.dart';
 import 'package:chatapp/features/auth/domain/usecase/get_current_user_usecase.dart';
 import 'package:chatapp/features/auth/domain/usecase/login_user_usecase.dart';
+import 'package:chatapp/features/auth/domain/usecase/logout_usecase.dart';
 import 'package:chatapp/features/auth/domain/usecase/save_user_data_usecase.dart';
 import 'package:chatapp/features/auth/domain/usecase/signup_user_usecase.dart';
 import 'package:chatapp/features/home/presentation/pages/home_page.dart';
@@ -14,11 +15,13 @@ class AuthController extends GetxController {
   final LoginUserUsecase loginUseCase;
   final SaveUserDataUsecase saveUserDataUseCase;
   final GetCurrentUserUsecase getCurrentUserUseCase;
+  final LogoutUsecase logoutUseCase;
   AuthController({
     required this.loginUseCase,
     required this.signupUseCase,
     required this.saveUserDataUseCase,
     required this.getCurrentUserUseCase,
+    required this.logoutUseCase,
   });
   var isLoading = false.obs;
   var authFailure = Rxn<Failure>();
@@ -48,6 +51,7 @@ class AuthController extends GetxController {
   Future<void> signup() async {
     isLoading.value = true;
     authFailure.value = null;
+
     final result = await signupUseCase(
       email: emailController.text.trim(),
       password: passwordController.text.trim(),
@@ -128,5 +132,9 @@ class AuthController extends GetxController {
       },
     );
     isLoading.value = false;
+  }
+
+  Future<void> logout() async {
+    await logoutUseCase.call();
   }
 }

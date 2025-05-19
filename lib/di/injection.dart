@@ -1,3 +1,8 @@
+import 'package:chatapp/features/addnewcontact/data/repositories/contact_repo_imp.dart';
+import 'package:chatapp/features/addnewcontact/data/source/remote_contact_data_source.dart';
+import 'package:chatapp/features/addnewcontact/domain/repository/contact_repository.dart';
+import 'package:chatapp/features/addnewcontact/domain/usecase/get_contacts.usecase.repo.dart';
+import 'package:chatapp/features/addnewcontact/presentation/getx/contact_controller.dart';
 import 'package:chatapp/features/auth/data/repository/auth_repository_imp.dart';
 import 'package:chatapp/features/auth/data/repository/user_repository_imp.dart';
 import 'package:chatapp/features/auth/data/sources/auth_remote_data_source.dart';
@@ -6,6 +11,7 @@ import 'package:chatapp/features/auth/domain/repository/auth_repository.dart';
 import 'package:chatapp/features/auth/domain/repository/user_repository.dart';
 import 'package:chatapp/features/auth/domain/usecase/get_current_user_usecase.dart';
 import 'package:chatapp/features/auth/domain/usecase/login_user_usecase.dart';
+import 'package:chatapp/features/auth/domain/usecase/logout_usecase.dart';
 import 'package:chatapp/features/auth/domain/usecase/save_user_data_usecase.dart';
 import 'package:chatapp/features/auth/domain/usecase/signup_user_usecase.dart';
 import 'package:chatapp/features/auth/presentation/getx/controller/auth_controller.dart';
@@ -13,6 +19,7 @@ import 'package:chatapp/service/firebase_auth_service.dart';
 import 'package:chatapp/service/firestore_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:get_it/get_it.dart';
 
 final sl = GetIt.instance; // get_it instance for service locator
@@ -38,6 +45,11 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton<UserRemotedataSource>(
     () => UserRemoteDataSourceImp(firestoreService: sl()),
   );
+  sl.registerLazySingleton<RemoteContactDataSource>(
+    () => RemoteContactDataSourceImpl(),
+  );
+
+ 
 
   // Repositories (after data sources!)
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImp(sl()));
@@ -45,12 +57,17 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton<UserRepository>(
     () => UserRepositoryImp(userRemoteDataSource: sl()),
   );
+  sl.registerLazySingleton<ContactRepository>(
+    () => ContactRepoImp(remoteContactDataSource: sl()),
+  );
 
   // Usecases
   sl.registerLazySingleton(() => LoginUserUsecase(repository: sl()));
   sl.registerLazySingleton(() => SignupUserUsecase(repository: sl()));
   sl.registerLazySingleton(() => SaveUserDataUsecase(sl()));
   sl.registerLazySingleton(() => GetCurrentUserUsecase(userRepository: sl()));
+  sl.registerLazySingleton(() => LogoutUsecase(repository: sl()));
+  sl.registerLazySingleton(()=>GetContactsUsecase(repository: sl()) );
 
   // Controller
   sl.registerLazySingleton(
@@ -59,8 +76,10 @@ Future<void> setupServiceLocator() async {
       signupUseCase: sl(),
       saveUserDataUseCase: sl(),
       getCurrentUserUseCase: sl(),
+      logoutUseCase: sl(),
     ),
   );
+  sl.registerLazySingleton(() => ContactController(getContactsUsecase: sl()));
 }
 
 // get_it is a service locator for flutter

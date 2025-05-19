@@ -1,7 +1,10 @@
 import 'package:chatapp/core/common/widgets/app_text.dart';
 import 'package:chatapp/di/injection.dart';
 import 'package:chatapp/features/auth/presentation/getx/controller/auth_controller.dart';
+import 'package:chatapp/features/auth/presentation/pages/signup_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -36,9 +39,13 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text(user.email),
                 SizedBox(height: 10),
-                TextButton(onPressed: () {
-                  authController.logout();
-                }, child: Text("Sign Out")),
+                TextButton(
+                  onPressed: () async {
+                    await authController.logout();
+                    Get.offAll(SignupPage());
+                  },
+                  child: Text("Sign Out"),
+                ),
               ],
             ),
           ],

@@ -7,6 +7,7 @@ abstract class AuthRemoteDataSource {
   Future<appUser.User> signUp(String email, String password);
   Future<appUser.User> login(String email, String password);
   Future<appUser.User> getCurrentUser();
+  Future<void> logout();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -60,5 +61,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       name: userModel.name,
       number: userModel.number,
     );
+  }
+
+  @override
+  Future<void> logout() async {
+    try {
+      await _firebaseAuthService.signOut();
+    } catch (e) {
+      print('Logout failed: $e');
+      rethrow;
+    }
   }
 }

@@ -37,4 +37,14 @@ class AuthRepositoryImp implements AuthRepository {
       return left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<void> logout() async {
+    try {
+      await remoteDataSource.logout();
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
 }
