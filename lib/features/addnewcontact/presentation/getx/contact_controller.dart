@@ -1,3 +1,4 @@
+import 'package:chatapp/features/addnewcontact/domain/model/contact_model.dart';
 import 'package:chatapp/features/addnewcontact/domain/usecase/get_contacts.usecase.repo.dart';
 import 'package:get/state_manager.dart';
 
@@ -5,7 +6,7 @@ class ContactController extends GetxController {
   final GetContactsUsecase getContactsUsecase;
   ContactController({required this.getContactsUsecase});
 
-  final allContacts = Rxn();
+  final Rxn<List<ContactModel>> allContacts = Rxn<List<ContactModel>>();
 
   @override
   void onInit() {
@@ -23,7 +24,8 @@ class ContactController extends GetxController {
         print("Error occurred: ${failure.message}");
       },
       (data) {
-        print("Matched contacts: ${data['matchedContacts']}");
+        allContacts.value = data['matchedContacts'];
+        print("All  Contacts that is saved in state: ${allContacts.value}");
       },
     );
   }

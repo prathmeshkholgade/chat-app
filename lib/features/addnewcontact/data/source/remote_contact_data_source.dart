@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:chatapp/core/error/failure.dart';
 import 'package:chatapp/di/injection.dart';
+import 'package:chatapp/features/addnewcontact/domain/model/contact_model.dart';
 import 'package:chatapp/features/auth/presentation/getx/controller/auth_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
@@ -55,24 +58,41 @@ class RemoteContactDataSourceImpl implements RemoteContactDataSource {
               .toList();
 
       final matchedContacts =
-          normalizedContacts.where((contact) {
-            String phoneNumber = normalizePhone(
-              contact['phone']?.toString() ?? '',
-            );
+          normalizedContacts
+              .where((contact) {
+                String phoneNumber = normalizePhone(
+                  contact['phone']?.toString() ?? '',
+                );
 
-            return registeredUsers.any((user) {
-              String userNumber = normalizePhone(user['number'].toString());
+                return registeredUsers.any((user) {
+                  String userNumber = normalizePhone(user['number'].toString());
 
-              final isBothNumberSame = userNumber == phoneNumber;
+                  final isBothNumberSame = userNumber == phoneNumber;
 
-              final isUserDifferent =
-                  user["id"] != authController.user.value!.id;
+                  final isUserDifferent =
+                      user["id"] != authController.user.value!.id;
 
-              final users = isBothNumberSame && isUserDifferent;
+                  return isBothNumberSame && isUserDifferent;
+                });
+              })
+              .map((contact) {
+                String phoneNumber = normalizePhone(
+                  contact['phone']?.toString() ?? '',
+                );
 
-              return users;
-            });
-          }).toList();
+                final matchedUser = registeredUsers.firstWhere((user) {
+                  String userNumber = normalizePhone(user['number'].toString());
+                  return userNumber == phoneNumber;
+                });
+                print(matchedUser);
+                return ContactModel(
+                  id: matchedUser["id"],
+                  name: contact["name"] as String? ?? '',
+                  phone: contact["phone"] as String? ?? '',
+                  photo: contact["photo"] as Uint8List?,
+                );
+              })
+              .toList();
 
       return Right({"matchedContacts": matchedContacts});
     } catch (e) {

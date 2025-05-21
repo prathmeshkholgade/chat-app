@@ -4,7 +4,7 @@ import 'package:chatapp/features/addnewcontact/presentation/pages/add_new_contac
 import 'package:chatapp/features/calls/pages/call_history_page.dart';
 import 'package:chatapp/features/contacts/pages/contact_page.dart';
 import 'package:chatapp/features/home/presentation/getx/controller/home_controller.dart';
-import 'package:chatapp/features/messages/pages/message_page.dart';
+import 'package:chatapp/features/messages/presentation/pages/message_page.dart';
 import 'package:chatapp/features/notifications/pages/notfication_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,9 +29,9 @@ class HomePage extends StatelessWidget {
           currentIndex: controller.currentIndex,
           // backgroundColor: Colors.white,
           type: BottomNavigationBarType.fixed,
-          onTap: (index) {
+          onTap: (index) async {
             if (index == 2) {
-              contactControll.getContacts();
+               contactControll.getContacts();
               return showContactsDialog(context);
             }
             controller.onItemTapped(index);

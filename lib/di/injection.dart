@@ -15,6 +15,13 @@ import 'package:chatapp/features/auth/domain/usecase/logout_usecase.dart';
 import 'package:chatapp/features/auth/domain/usecase/save_user_data_usecase.dart';
 import 'package:chatapp/features/auth/domain/usecase/signup_user_usecase.dart';
 import 'package:chatapp/features/auth/presentation/getx/controller/auth_controller.dart';
+import 'package:chatapp/features/messages/data/repository/chat_repo_imp.dart';
+import 'package:chatapp/features/messages/data/source/chat_remote_data_sorce.dart';
+import 'package:chatapp/features/messages/data/source/send_msg_remote_data_source.dart';
+import 'package:chatapp/features/messages/domain/repository/chat_repository.dart';
+import 'package:chatapp/features/messages/domain/usecase/get_chat_room.usecase.dart';
+import 'package:chatapp/features/messages/domain/usecase/send_msg_usecase.dart';
+import 'package:chatapp/features/messages/presentation/getx/message_chat_controller.dart';
 import 'package:chatapp/service/firebase_auth_service.dart';
 import 'package:chatapp/service/firestore_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -49,8 +56,6 @@ Future<void> setupServiceLocator() async {
     () => RemoteContactDataSourceImpl(),
   );
 
- 
-
   // Repositories (after data sources!)
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImp(sl()));
 
@@ -67,8 +72,7 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => SaveUserDataUsecase(sl()));
   sl.registerLazySingleton(() => GetCurrentUserUsecase(userRepository: sl()));
   sl.registerLazySingleton(() => LogoutUsecase(repository: sl()));
-  sl.registerLazySingleton(()=>GetContactsUsecase(repository: sl()) );
-
+  sl.registerLazySingleton(() => GetContactsUsecase(repository: sl()));
   // Controller
   sl.registerLazySingleton(
     () => AuthController(
@@ -80,6 +84,23 @@ Future<void> setupServiceLocator() async {
     ),
   );
   sl.registerLazySingleton(() => ContactController(getContactsUsecase: sl()));
+
+  // dependency for chatmessage
+  sl.registerLazySingleton<ChatRepository>(
+    () => ChatRepoImp(sendMsgRemoteDataSource: sl(), chatRemoteDataSorce: sl()),
+  );
+  sl.registerLazySingleton<SendMsgRemoteDataSource>(
+    () => SendMsgRemoteDataSourceImpl(),
+  );
+  sl.registerLazySingleton<ChatRemoteDataSorce>(
+    () => ChatRemoteDataSorceImpl(),
+  );
+  sl.registerLazySingleton(() => SendMsgUseCase(chatRepository: sl()));
+  sl.registerLazySingleton(() => GetChatRoomUseCase(chatRepository: sl()));
+
+  sl.registerLazySingleton(
+    () => MessageChatController(sendMsgUseCase: sl(),getChatRoomUseCase: sl()),
+  );
 }
 
 // get_it is a service locator for flutter
