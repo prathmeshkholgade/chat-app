@@ -3,7 +3,7 @@ import 'package:chatapp/features/messages/domain/entities/chat_messaage.entitiy.
 import 'package:flutter/material.dart';
 
 class MessageBubbles extends StatelessWidget {
-  final ChatMessageModel message;
+  final ChatMessaageEntitiy message;
   final bool isMe;
   const MessageBubbles({required this.message, required this.isMe});
   @override
@@ -25,7 +25,6 @@ class MessageBubbles extends StatelessWidget {
           right: isMe ? 8 : 6,
           bottom: 4,
         ),
-
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

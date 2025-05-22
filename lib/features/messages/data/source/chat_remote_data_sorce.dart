@@ -15,6 +15,7 @@ abstract class ChatRemoteDataSorce {
 
 class ChatRemoteDataSorceImpl extends ChatRemoteDataSorce {
   final FirestoreService fireStore = sl<FirestoreService>();
+  @override
   Future<Either<Failure, ChatRoomModel>> getChatRoom(
     String currentUid,
     String friendUid,

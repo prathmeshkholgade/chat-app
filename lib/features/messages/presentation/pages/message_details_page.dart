@@ -23,16 +23,37 @@ class MessageDetailsPage extends StatefulWidget {
 class _MessageDetailsPageState extends State<MessageDetailsPage> {
   final chatMessageController = sl<MessageChatController>();
   final authController = sl<AuthController>();
+
   late String currentUid;
   @override
   void initState() {
-    currentUid = authController.user.value!.id;
     super.initState();
+    _loadMessagesAndChatRoom();
+  }
+
+  Future<void> _loadMessagesAndChatRoom() async {
     print("this is receiver id  ${widget.receiverId}");
-    chatMessageController.loadChatRoom(
+    currentUid = authController.user.value!.id;
+    await chatMessageController.loadChatRoom(
       currentUid: currentUid,
       friendUid: widget.receiverId,
     );
+    // print("📥 Chat room loaded.");
+
+    // print("this is the previous msg of users  $messages");
+    // final data =
+    //     messages.map((doc) {
+    //       return ChatMessageModel(
+    //         id: doc.id,
+    //         senderId: doc.senderId,
+    //         receiverId: doc.receiverId,
+    //         content: doc.content,
+    //         readBy: doc.readBy,
+    //         createdAt: doc.createdAt,
+    //         chatRoomId: doc.chatRoomId,
+    //       );
+    //     }).toList();
+    // print(data.toString());
   }
 
   @override
@@ -67,25 +88,20 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
         child: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  return MessageBubbles(
-                    message: ChatMessageModel(
-                      id: "dfs",
-                      chatRoomId: "sadsa",
-                      senderId: "sad",
-                      receiverId: widget.receiverId,
-                      content: "hello i am prathmesh  ",
-                      readBy: [],
-                      status: MessageStatus.sent,
-                      messageType: MessageType.text,
-                      createdAt: DateTime.now(),
-                    ),
-                    isMe: true,
-                  );
-                },
-              ),
+              child: Obx(() {
+                final messages = chatMessageController.messages;
+                return ListView.builder(
+                  reverse: true,
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final message = messages[index];
+                    return MessageBubbles(
+                      message: message,
+                      isMe: message.senderId == currentUid,
+                    );
+                  },
+                );
+              }),
             ),
             Column(
               children: [
@@ -122,8 +138,10 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                                     currentUid,
                                     widget.receiverId,
                                   );
+                                  chatMessageController.messageController
+                                      .clear();
                                 }
-                                : null, // disables the tap if chatRoom is not ready
+                                : null,
                         child: CircleAvatar(
                           backgroundColor:
                               isChatRoomReady

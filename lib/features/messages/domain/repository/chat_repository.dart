@@ -20,8 +20,12 @@ abstract class ChatRepository {
     MessageType messageType = MessageType.text,
   });
 
-  Future<Either<Failure, Stream<List<ChatRoomModel>>>> getMessage({
+  Future<Either<Failure, Stream<List<ChatMessageModel>>>> getMessage({
     required String roomId,
-    DocumentSnapshot lastMessage,
+    DocumentSnapshot? lastMessage,
+  });
+  Future<Either<Failure, Stream<List<ChatMessageModel>>>> getMoreMsg({
+    required String roomId,
+    required DocumentSnapshot lastMessage,
   });
 }

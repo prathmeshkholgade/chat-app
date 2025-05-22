@@ -32,13 +32,19 @@ class ChatRoomModel extends ChatRoomEntity {
   factory ChatRoomModel.fromJson(Map<String, dynamic> json) {
     return ChatRoomModel(
       id: json["id"],
-      participants: json["participants"],
-      isTyping: json["isTyping"],
+      participants:
+          (json["participants"] as List<dynamic>)
+              .map((e) => e?.toString())
+              .toList(),
+      isTyping: json["isTyping"] ?? false,
       isTypingUserId: json["isTypingUserId"],
-      lastMessageTime: json["lastMessageTime"],
+      lastMessageTime: (json["lastMessageTime"] as Timestamp?)?.toDate(),
       lastMessageSenderId: json["lastMessageSenderId"],
-      lastreadtime: json["lastreadtime"],
-      participantsName: json["participantsName"],
+      lastreadtime: (json["lastreadtime"] as Map<String, dynamic>?)?.map(
+        (key, value) => MapEntry(key, value as Timestamp),
+      ),
+      participantsName: (json["participantsName"] as Map<String, dynamic>?)
+          ?.map((key, value) => MapEntry(key, value.toString())),
       lastMessage: json["lastMessage"],
     );
   }

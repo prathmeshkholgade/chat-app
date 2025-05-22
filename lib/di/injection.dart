@@ -17,9 +17,13 @@ import 'package:chatapp/features/auth/domain/usecase/signup_user_usecase.dart';
 import 'package:chatapp/features/auth/presentation/getx/controller/auth_controller.dart';
 import 'package:chatapp/features/messages/data/repository/chat_repo_imp.dart';
 import 'package:chatapp/features/messages/data/source/chat_remote_data_sorce.dart';
+import 'package:chatapp/features/messages/data/source/get_more_msg_remote_data_source.dart';
+import 'package:chatapp/features/messages/data/source/get_msg_remote_data_source.dart';
 import 'package:chatapp/features/messages/data/source/send_msg_remote_data_source.dart';
 import 'package:chatapp/features/messages/domain/repository/chat_repository.dart';
 import 'package:chatapp/features/messages/domain/usecase/get_chat_room.usecase.dart';
+import 'package:chatapp/features/messages/domain/usecase/get_more_msg_usecase.dart';
+import 'package:chatapp/features/messages/domain/usecase/get_msg_usecase.dart';
 import 'package:chatapp/features/messages/domain/usecase/send_msg_usecase.dart';
 import 'package:chatapp/features/messages/presentation/getx/message_chat_controller.dart';
 import 'package:chatapp/service/firebase_auth_service.dart';
@@ -87,7 +91,12 @@ Future<void> setupServiceLocator() async {
 
   // dependency for chatmessage
   sl.registerLazySingleton<ChatRepository>(
-    () => ChatRepoImp(sendMsgRemoteDataSource: sl(), chatRemoteDataSorce: sl()),
+    () => ChatRepoImp(
+      sendMsgRemoteDataSource: sl(),
+      chatRemoteDataSorce: sl(),
+      getMsgRemoteDataSource: sl(),
+      getMoreMsgRemoteDataSource: sl(),
+    ),
   );
   sl.registerLazySingleton<SendMsgRemoteDataSource>(
     () => SendMsgRemoteDataSourceImpl(),
@@ -95,11 +104,26 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton<ChatRemoteDataSorce>(
     () => ChatRemoteDataSorceImpl(),
   );
+  sl.registerLazySingleton<GetMsgRemoteDataSource>(
+    () => GetMsgeRemoteDataSourceImp(),
+  );
+  sl.registerLazySingleton<GetMoreMsgRemoteDataSource>(
+    () => GetMoreMsgRemoteDataSourceImp(),
+  );
   sl.registerLazySingleton(() => SendMsgUseCase(chatRepository: sl()));
   sl.registerLazySingleton(() => GetChatRoomUseCase(chatRepository: sl()));
+  sl.registerLazySingleton<GetMsgUsecase>(
+    () => GetMsgUsecase(chatRepository: sl()),
+  );
+  sl.registerLazySingleton(()=>GetMoreMsgUsecase(chatRepository: sl()));
 
   sl.registerLazySingleton(
-    () => MessageChatController(sendMsgUseCase: sl(),getChatRoomUseCase: sl()),
+    () => MessageChatController(
+      sendMsgUseCase: sl(),
+      getChatRoomUseCase: sl(),
+      getMsgUseCase: sl(),
+      getMoreMsgUsecase: sl(),
+    ),
   );
 }
 

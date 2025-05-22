@@ -2,7 +2,7 @@ enum MessageType { text, image, vidio }
 
 enum MessageStatus { sent, delivered, read }
 
-class ChatMessaageEntitiy {
+class ChatMessaageEntitiy  {
   final String id;
   final String senderId;
   final String chatRoomId;
