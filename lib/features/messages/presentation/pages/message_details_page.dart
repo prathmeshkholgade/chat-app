@@ -82,82 +82,88 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
           Icon(Icons.call),
         ],
       ),
-      body: Container(
-        padding: EdgeInsets.all(5),
-        decoration: BoxDecoration(color: Colors.black12),
-        child: Column(
-          children: [
-            Expanded(
-              child: Obx(() {
-                final messages = chatMessageController.messages;
-                return ListView.builder(
-                  reverse: true,
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final message = messages[index];
-                    return MessageBubbles(
-                      message: message,
-                      isMe: message.senderId == currentUid,
-                    );
-                  },
-                );
-              }),
-            ),
-            Column(
-              children: [
-                Row(
+      body:
+          authController.user.value?.id == null
+              ? CircularProgressIndicator()
+              : Container(
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(color: Colors.black12),
+                child: Column(
                   children: [
-                    Icon(Icons.emoji_emotions),
                     Expanded(
-                      child: TextField(
-                        controller: chatMessageController.messageController,
-                        keyboardType: TextInputType.multiline,
-                        textCapitalization: TextCapitalization.sentences,
-                        decoration: InputDecoration(
-                          hintText: "Type a message",
-                          filled: true,
-                          fillColor: Colors.transparent,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                        ),
-                      ),
+                      child: Obx(() {
+                        final messages = chatMessageController.messages;
+                        return ListView.builder(
+                          reverse: true,
+                          itemCount: messages.length,
+                          itemBuilder: (context, index) {
+                            final message = messages[index];
+                            return MessageBubbles(
+                              message: message,
+                              isMe: message.senderId == currentUid,
+                            );
+                          },
+                        );
+                      }),
                     ),
-                    Obx(() {
-                      final isChatRoomReady =
-                          chatMessageController.chatRoom.value != null;
-                      return GestureDetector(
-                        onTap:
-                            isChatRoomReady
-                                ? () {
-                                  print(
-                                    "sending message $currentUid to ${widget.receiverId}",
-                                  );
-                                  chatMessageController.sendMessage(
-                                    currentUid,
-                                    widget.receiverId,
-                                  );
-                                  chatMessageController.messageController
-                                      .clear();
-                                }
-                                : null,
-                        child: CircleAvatar(
-                          backgroundColor:
-                              isChatRoomReady
-                                  ? Colors.orange[300]
-                                  : Colors.grey,
-                          child: Icon(Icons.send),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.emoji_emotions),
+                            Expanded(
+                              child: TextField(
+                                controller:
+                                    chatMessageController.messageController,
+                                keyboardType: TextInputType.multiline,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                decoration: InputDecoration(
+                                  hintText: "Type a message",
+                                  filled: true,
+                                  fillColor: Colors.transparent,
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Obx(() {
+                              final isChatRoomReady =
+                                  chatMessageController.chatRoom.value != null;
+                              return GestureDetector(
+                                onTap:
+                                    isChatRoomReady
+                                        ? () {
+                                          print(
+                                            "sending message $currentUid to ${widget.receiverId}",
+                                          );
+                                          chatMessageController.sendMessage(
+                                            currentUid,
+                                            widget.receiverId,
+                                          );
+                                          chatMessageController
+                                              .messageController
+                                              .clear();
+                                        }
+                                        : null,
+                                child: CircleAvatar(
+                                  backgroundColor:
+                                      isChatRoomReady
+                                          ? Colors.orange[300]
+                                          : Colors.grey,
+                                  child: Icon(Icons.send),
+                                ),
+                              );
+                            }),
+                          ],
                         ),
-                      );
-                    }),
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
-          ],
-        ),
-      ),
+              ),
     );
   }
 }

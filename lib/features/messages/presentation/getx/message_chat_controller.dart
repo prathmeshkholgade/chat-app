@@ -1,11 +1,14 @@
 import 'dart:async';
 
+import 'package:chatapp/di/injection.dart';
+import 'package:chatapp/features/auth/presentation/getx/controller/auth_controller.dart';
 import 'package:chatapp/features/messages/data/model/Chat_room_model.dart';
 import 'package:chatapp/features/messages/domain/entities/chat_messaage.entitiy.dart';
 import 'package:chatapp/features/messages/domain/repository/chat_repository.dart';
 import 'package:chatapp/features/messages/domain/usecase/get_chat_room.usecase.dart';
 import 'package:chatapp/features/messages/domain/usecase/get_more_msg_usecase.dart';
 import 'package:chatapp/features/messages/domain/usecase/get_msg_usecase.dart';
+import 'package:chatapp/features/messages/domain/usecase/get_recent_chat_rooms.dart';
 import 'package:chatapp/features/messages/domain/usecase/send_msg_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
@@ -19,12 +22,14 @@ class MessageChatController extends GetxController {
   final SendMsgUseCase sendMsgUseCase;
   final GetMsgUsecase getMsgUseCase;
   final GetMoreMsgUsecase getMoreMsgUsecase;
-
+  final GetRecentChatRoomsUseCase getRecentChatRoomsUseCase;
+  final authController = sl<AuthController>();
   MessageChatController({
     required this.sendMsgUseCase,
     required this.getChatRoomUseCase,
     required this.getMsgUseCase,
     required this.getMoreMsgUsecase,
+    required this.getRecentChatRoomsUseCase,
   });
   var chatStatus = ChatStatus.intial.obs;
   var error = ''.obs;
@@ -53,7 +58,6 @@ class MessageChatController extends GetxController {
         print("and this is room $room");
         chatRoom.value = room;
         chatStatus.value = ChatStatus.loaded;
-
         subscribeToMessages(room.id!);
       },
     );
@@ -86,12 +90,6 @@ class MessageChatController extends GetxController {
     );
   }
 
-  @override
-  void onClose() {
-    messageController.dispose();
-    super.onClose();
-  }
-
   void subscribeToMessages(String roomId) async {
     _messageSubscription?.cancel();
     final result = await getMsgUseCase(roomId: roomId);
@@ -115,5 +113,16 @@ class MessageChatController extends GetxController {
         );
       },
     );
+  }
+
+  Stream<List<ChatRoomModel>> getRecentChatRooms() {
+    final userUid = authController.user.value!.id;
+    return getRecentChatRoomsUseCase(userUid);
+  }
+
+  @override
+  void onClose() {
+    messageController.dispose();
+    super.onClose();
   }
 }

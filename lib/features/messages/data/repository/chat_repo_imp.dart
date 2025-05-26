@@ -4,6 +4,7 @@ import 'package:chatapp/features/messages/data/model/chat_message_model.dart';
 import 'package:chatapp/features/messages/data/source/chat_remote_data_sorce.dart';
 import 'package:chatapp/features/messages/data/source/get_more_msg_remote_data_source.dart';
 import 'package:chatapp/features/messages/data/source/get_msg_remote_data_source.dart';
+import 'package:chatapp/features/messages/data/source/get_recent_remote_chat_room.dart';
 import 'package:chatapp/features/messages/data/source/send_msg_remote_data_source.dart';
 import 'package:chatapp/features/messages/domain/entities/chat_messaage.entitiy.dart';
 import 'package:chatapp/features/messages/domain/repository/chat_repository.dart';
@@ -15,11 +16,13 @@ class ChatRepoImp implements ChatRepository {
   final SendMsgRemoteDataSource sendMsgRemoteDataSource;
   final GetMsgRemoteDataSource getMsgRemoteDataSource;
   final GetMoreMsgRemoteDataSource getMoreMsgRemoteDataSource;
+  final GetRecentRemoteChatRoom getRecentRemoteChatRoom;
   ChatRepoImp({
     required this.sendMsgRemoteDataSource,
     required this.chatRemoteDataSorce,
     required this.getMsgRemoteDataSource,
     required this.getMoreMsgRemoteDataSource,
+    required this.getRecentRemoteChatRoom,
   });
   @override
   Future<Either<Failure, ChatRoomModel>> getChatRoom(
@@ -66,5 +69,11 @@ class ChatRepoImp implements ChatRepository {
       roomId: roomId,
       lastMessage: lastMessage,
     );
+  }
+
+  @override
+  Stream<List<ChatRoomModel>> getRecentChatRooms(String userId) {
+    // TODO: implement getRecentChatRooms
+    return getRecentRemoteChatRoom.getRecentChatRooms(userId);
   }
 }

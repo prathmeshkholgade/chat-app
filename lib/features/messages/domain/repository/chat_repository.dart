@@ -28,4 +28,5 @@ abstract class ChatRepository {
     required String roomId,
     required DocumentSnapshot lastMessage,
   });
+  Stream<List<ChatRoomModel>> getRecentChatRooms(String userId);
 }

@@ -34,19 +34,16 @@ class ChatRemoteDataSorceImpl extends ChatRemoteDataSorce {
         final chatRoom = ChatRoomModel.fromFireStore(roomDocs);
         return right(chatRoom);
       }
-
       final currentUserData =
           (await fireStore.fireStore.collection("users").doc(currentUid).get())
               .data();
       final friendUserData =
           (await fireStore.fireStore.collection("users").doc(friendUid).get())
               .data();
-
       final participantsName = {
         currentUid: currentUserData?["name"].toString() ?? " ",
         friendUid: friendUserData?["name"].toString() ?? " ",
       };
-
       final newRoom = ChatRoomModel(
         id: roomId,
         participants: users,
