@@ -102,6 +102,7 @@ class AuthController extends GetxController {
       );
       result.fold(
         (failure) {
+          print(failure);
           authFailure.value = failure;
           Get.snackbar("Login Failed", failure.message);
         },
@@ -112,6 +113,8 @@ class AuthController extends GetxController {
           Get.offAll(HomePage());
         },
       );
+    }catch(e){
+      print(e);
     } finally {
       isLoading.value = false;
     }

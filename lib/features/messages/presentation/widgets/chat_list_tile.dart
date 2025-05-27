@@ -1,11 +1,15 @@
+import 'package:chatapp/di/injection.dart';
 import 'package:chatapp/features/messages/data/model/Chat_room_model.dart';
+import 'package:chatapp/features/messages/presentation/getx/message_chat_controller.dart';
 import 'package:flutter/material.dart';
 
 class ChatListTile extends StatelessWidget {
   final ChatRoomModel chat;
   final String currentUserId;
   final VoidCallback onTap;
-  const ChatListTile({
+  final chatMessageController = sl<MessageChatController>();
+
+  ChatListTile({
     super.key,
     required this.chat,
     required this.currentUserId,
@@ -24,6 +28,7 @@ class ChatListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: onTap,
       leading: CircleAvatar(
         child: Text(
           getChatRoomName()[0].toUpperCase(),
@@ -40,10 +45,6 @@ class ChatListTile extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-      ),
-      trailing: Container(
-        decoration: BoxDecoration(shape: BoxShape.circle),
-        child: Text("3"),
       ),
     );
   }

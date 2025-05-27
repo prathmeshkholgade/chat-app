@@ -25,6 +25,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
   final authController = sl<AuthController>();
 
   late String currentUid;
+
   @override
   void initState() {
     super.initState();

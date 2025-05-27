@@ -10,6 +10,8 @@ import 'package:chatapp/features/messages/domain/usecase/get_more_msg_usecase.da
 import 'package:chatapp/features/messages/domain/usecase/get_msg_usecase.dart';
 import 'package:chatapp/features/messages/domain/usecase/get_recent_chat_rooms.dart';
 import 'package:chatapp/features/messages/domain/usecase/send_msg_usecase.dart';
+import 'package:chatapp/service/firestore_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/state_manager.dart';
@@ -24,6 +26,7 @@ class MessageChatController extends GetxController {
   final GetMoreMsgUsecase getMoreMsgUsecase;
   final GetRecentChatRoomsUseCase getRecentChatRoomsUseCase;
   final authController = sl<AuthController>();
+  final FirestoreService fireStore = sl<FirestoreService>();
   MessageChatController({
     required this.sendMsgUseCase,
     required this.getChatRoomUseCase,
@@ -35,13 +38,21 @@ class MessageChatController extends GetxController {
   var error = ''.obs;
   var chatRoom = Rxn<ChatRoomModel>();
   var messages = <ChatMessaageEntitiy>[].obs;
+  RxBool isInTheChat = false.obs;
+
   StreamSubscription? _messageSubscription;
+  CollectionReference get getChatRooms =>
+      fireStore.fireStore.collection("chatRooms");
+
+  CollectionReference getChatRoomMsg(String roomId) {
+    return getChatRooms.doc(roomId).collection("messages");
+  }
 
   Future<void> loadChatRoom({
     required String currentUid,
     required String friendUid,
   }) async {
-    print("loading chat room...");
+    isInTheChat.value = true;
     chatStatus.value = ChatStatus.loaded;
     final result = await getChatRoomUseCase(
       currentUid: currentUid,
@@ -54,8 +65,6 @@ class MessageChatController extends GetxController {
         error.value = failuer.message;
       },
       (room) {
-        print("Chat room successfully loaded: ${room.id}");
-        print("and this is room $room");
         chatRoom.value = room;
         chatStatus.value = ChatStatus.loaded;
         subscribeToMessages(room.id!);
@@ -64,9 +73,6 @@ class MessageChatController extends GetxController {
   }
 
   Future<void> sendMessage(String currentUid, friendUid) async {
-    print(
-      "send msg reached here with $currentUid to $friendUid and the message is < ${messageController.text} > and the chatRoom value is  this ${chatRoom.value} ",
-    );
     if (messageController.text.trim().isEmpty || chatRoom.value == null) return;
 
     final msgText = messageController.text.trim();
@@ -93,6 +99,7 @@ class MessageChatController extends GetxController {
   void subscribeToMessages(String roomId) async {
     _messageSubscription?.cancel();
     final result = await getMsgUseCase(roomId: roomId);
+
     result.fold(
       (failure) {
         print("Failed to get messages: ${failure.message}");
@@ -101,9 +108,10 @@ class MessageChatController extends GetxController {
       },
       (stream) {
         _messageSubscription = stream.listen(
-          (msgList) {
+          (msgList) async {
             print("New messages received: $msgList");
             messages.assignAll(msgList);
+            await markMessageAsRead(roomId, authController.user.value!.id);
           },
           onError: (e) {
             print("Error listening to messages: $e");
@@ -118,6 +126,38 @@ class MessageChatController extends GetxController {
   Stream<List<ChatRoomModel>> getRecentChatRooms() {
     final userUid = authController.user.value!.id;
     return getRecentChatRoomsUseCase(userUid);
+  }
+
+  Stream<int> getUnreadCount(String chatRoomid, String userId) {
+    return getChatRoomMsg(chatRoomid)
+        .where("receiverId", isEqualTo: userId)
+        .where("status", isEqualTo: MessageStatus.sent.toString())
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs.length;
+        });
+  }
+
+  Future<void> markMessageAsRead(String chatRoomId, String userId) async {
+    final batch = fireStore.fireStore.batch();
+    final unReadMessages =
+        await getChatRoomMsg(chatRoomId)
+            .where("receiverid", isEqualTo: userId)
+            .where("status", isEqualTo: MessageStatus.sent.toString())
+            .get();
+    print("found un read messages: ${unReadMessages.docs.length}");
+    for (final doc in unReadMessages.docs) {
+      batch.update(doc.reference, {
+        "readBy": FieldValue.arrayUnion([userId]),
+        "status": MessageStatus.read.toString(),
+      });
+      await batch.commit();
+      print("marked msg as a read for userId $userId");
+    }
+  }
+
+  Future<void> leaveChat() async {
+    isInTheChat.value = false;
   }
 
   @override

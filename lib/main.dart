@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
   MyApp({super.key});
   @override
   Widget build(BuildContext context) {
+    print("logged in user $user");
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkThemMode,

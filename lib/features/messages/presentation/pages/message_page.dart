@@ -21,6 +21,7 @@ class _MessagePageState extends State<MessagePage> {
   @override
   void initState() {
     super.initState();
+    messageChatController.leaveChat();
     // Wait until the user data is available before loading messages
     
   }
