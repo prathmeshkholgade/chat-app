@@ -1,4 +1,6 @@
 import 'package:chatapp/core/theme/theme.dart';
+import 'package:chatapp/core/utils/errror_page.dart';
+import 'package:chatapp/core/utils/network_error_page.dart';
 import 'package:chatapp/di/injection.dart';
 import 'package:chatapp/features/auth/domain/entities/user.dart';
 import 'package:chatapp/features/auth/presentation/getx/bindings/auth_binding.dart';
@@ -25,6 +27,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  final networkController = Get.put(sl<NetworkController>(), permanent: true);
   final authController = Get.put(sl<AuthController>());
   final user = FirebaseAuth.instance.currentUser;
 
@@ -33,6 +36,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     print("logged in user $user");
     return GetMaterialApp(
+      initialRoute: "/",
+      getPages: [GetPage(name: "/error", page: () => ErrorPage())],
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkThemMode,
       home: user != null ? HomePage() : SignupPage(),

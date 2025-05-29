@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
           type: BottomNavigationBarType.fixed,
           onTap: (index) async {
             if (index == 2) {
-               contactControll.getContacts();
+              contactControll.getContacts();
               return showContactsDialog(context);
             }
             controller.onItemTapped(index);

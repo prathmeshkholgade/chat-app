@@ -1,3 +1,4 @@
+import 'package:chatapp/core/utils/network_error_page.dart';
 import 'package:chatapp/features/addnewcontact/data/repositories/contact_repo_imp.dart';
 import 'package:chatapp/features/addnewcontact/data/source/remote_contact_data_source.dart';
 import 'package:chatapp/features/addnewcontact/domain/repository/contact_repository.dart';
@@ -38,6 +39,7 @@ import 'package:get_it/get_it.dart';
 final sl = GetIt.instance; // get_it instance for service locator
 
 Future<void> setupServiceLocator() async {
+  sl.registerLazySingleton<NetworkController>(() => NetworkController());
   // Firebase services
 
   sl.registerLazySingleton(() => FirebaseAuth.instance);
